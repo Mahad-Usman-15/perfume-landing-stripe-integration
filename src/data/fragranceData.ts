@@ -1,15 +1,21 @@
 import { OlfactoryNote, Testimonial, FaqItem, Benefit } from '../types';
+import logoImg from '../assets/logo.png';
+import heroImg from '../assets/hero.png';
+import discountImg from '../assets/discount.png';
+import productImg from '../assets/product.png';
+import menImg from '../assets/men.png';
+import stillLifeImg from '../assets/still-life.png';
 
 export const ASSETS = {
-  logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCGUNK2XI5jarBX9hbiG8sNaeE2rEEZa2WXLPXw-ED8naHzIjPDQKvawUJsZowpje1sMarT6CuWkzgmzkuprmNBfPNRh2VV37Q2hQZAfFGd0ATtwH92Y2gqcXzOmfNLkwTZyKXwSZ7iUeWDUrhUrecAQCEDzP4xlALZSuqGXQ2OSyzQvSempasHp7dDt14oZL_jvOgPCAFlmbRayuc7NcwOntgusBArcyE9RuJdVju7Vqm2tkWpwWQz4ASa9UlB-hqzyBY',
-  heroBottle: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBzVoAFLl5-WOFdNH4afqsAux9LLP-8j6JUWiZhKR4b2v-emlwTUygmJGLsU0ug9CzyWD8fwFcJEWXE6GxpK3uZbZRWJIpWoJPXfVgYExMIw-eml5Wu2N8asfYyWoq4i35GQzInXthq0Qi6hizEVsDMysVjgWUeDB6T7DO-6Hc6jXXj2kz3QSVelb6k9j7KizrR5EP58TZ-9LuCLdkZjGupm9aFNJKj0e7unJTqAbwyR3SanxMKHMnuUEmxAQ7-FmK2nSA',
-  openingCitrus: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAeRr1F-_-J2Ffr5aA0nHqdYOZaHbCuXfck8n3UE626O1R0utczAdu4SUEDit4dlx7X5AkBli-CTsZ6Ka7R8q6Fqz9XMsAiORSSg-xDnEfDuSPOw04Q5tqnnqvNllJN_6P9JRvcbiRifwvc8Hs1_b0syQui5WjAemliEFRvAO-T5jFHLB3k0s9xt1fKTAYMIuIGRhMVwBiw9g-vxfCo7TsdX_j8O8KhByevySjmV0_1DFv_IkV-GUSbU_egJcmIsb_CSAg',
-  drydownWood: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBCjOBGgQROvcyo0lniEVU90SZ4ezadlwUClio2OqSV2ZQPWBGqkd3jy5hexFK_HNmn5p-oh-zecLmuyu0KWGfwU8wjo0fMTh4gTzDTBeoVOjTRNYZ5nAWFMhwa_TQTRFVFSplpKrifAiywgO3MXpfEsWmK7W61qkRol43y-grVVCAJqpSUaKm4QWW5-KFyjJIcFuPYV5ZdCZuY7EfBscj2WRni5fVwm1x3K5r7giN6gn7DsTwlFxDy9FIAvqwLRgtR-gY',
-  lifestyleExecutive: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDSVH8EAw79f9Xw8SzwEG9CBVTSxJCbw_PDlt0RDvjfNWG_twZb1kaakifCn1PKKnTr9QEWuVe2rZtnrqgC2dLq4bhiZMr9E9Wf-bH_iOteOUdsaqzBFJuXwUZi6Xf-aFsuncjVbfD5tuvYfBhKBBuv82tIX34M8ByaWHfZ1ABQ-fVHgW-kdo8ZNML-LGWdWpxj-jYrWVDb1w-eSDaKsIf_heNWyMJzorH6JFT3hZA82psg4AWtLrYcn9jKNjYVgL1Zpy0',
-  offerPromo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBmHojlKp_7Hs6UQpG8ACtBIHB9M6GtDfXgk8AR5TRRX3iUvySVTG8N0C7am3FRBRcKaqSgKUqsIqg6dC9Idjl_wdim_ygx4UDlAkUS_3_fLR0QyyyxWq6Qfz5w2wrMIcJn_q0NcKiV2H3g_O48xVAnO-NV2M4Dbrpauvp4jeBsdLo8sUQSJ9ziIrHnwdJb1XT54uSkNl9aTcxUWXXbVZrZ3PTMypuOmzvCsH9Ch9ky70KD7_imoaiW00Rxs-DbPMnR8Uk',
-  finalAtmosphere: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC25hYoFIJb-aKRNaWDHXqou7xPiQf1-ZeFxbWiHiprcv7f3j9e9EblwZ3-MhoLHhp7HIkFz8Mtx_N-DEu7wsGn0B5-rexgqEtDS2b1OKlhbs1XIysBRtSuw9ZpjcPdLSafrOojhA_tAiwNSUE_9eFGyUhGuSTbyxjRzdhX5JEVBKVtjgWIGZ0wE7TKgjZDengIEa3F0lYOrNciYZA0vc8FwwPvg19M8u65JhQO7Elhdoi8ZCSz4-RAyNezCN7Q39IMUHg',
-  stickyThumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4k430Tn5L4_0un5Dkzo5RNB7RVwCY33CYTRRYpkM7Oe23akUXhQiRfMXIevSgzoL00qJ5Cqurnn0w_DpP_plbYR3ifZL8FY2ps794-ttudsObVZn4H1ea4y_tFIYt-krpgQpvm0Vb_1DSKBz_dBIA9m7mBZtCZn2B6SvikpGaA0LcjwUz_ifkASiGkxsEhDZjBgrk8lLrMsxjnMMQVjAZO6QIMGixOztN8KZTfq3xtWlbUOgyFMbytLDXy9qCOvf_Q5s',
-  footerLogo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAXzqGwBY0sykMsXsKRbwcBDIIoWPQ0SLcDW5gi-Qc-RIBPUYF-no8C7xuKzhkvOO7I2v_T3Mupr5h1O6lJBVVjWMZ3AvMW6iuPF5PuAiEeTURtSdWiV_mswPPTyfMCBbMBzxJnZadn1YRB-Vo_T8F-z45StW1ySXsvP5EnziwUQhoOCEU_nkh3zkBztssVz5PPqJEplgpeZE4Otqo4LtWmjFpqs-K2FfUB4WKNRj5f6jV5KRSDTEb_mWLZa8sq_XARTkU'
+  logo: logoImg,
+  heroBottle: heroImg,
+  openingCitrus: stillLifeImg,
+  drydownWood: productImg,
+  lifestyleExecutive: menImg,
+  offerPromo: discountImg,
+  finalAtmosphere: heroImg,
+  stickyThumbnail: productImg,
+  footerLogo: logoImg,
 };
 
 export const PRODUCT_DETAILS = {

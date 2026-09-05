@@ -2,5 +2,7 @@
   "name": "Khushboo Fragrance",
   "description": "Khushboo Extrait De Parfum — The Signature of Presence luxury men's fragrance landing page with olfactory notes, executive heritage, client reviews, and seamless ordering.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
