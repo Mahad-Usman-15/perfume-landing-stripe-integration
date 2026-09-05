@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Montserrat", system-ui, -apple-system, sans-serif;
+
+  --color-surface-dark: #070d0a;
+  --color-surface-card: #0d1612;
+  --color-surface-card-hover: #14221c;
+  --color-border-subtle: #1b3528;
+  --color-primary-gold: #d4af37;
+  --color-primary-light: #f2d982;
+  --color-primary-dark: #8a7322;
+  --color-text-primary: #f1f5f2;
+  --color-text-muted: #9eaba2;
+  --color-gold-border: rgba(212, 175, 55, 0.25);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: #070d0a;
+    color: #f1f5f2;
+  }
+  
+  h1, h2, h3, .font-serif-title {
+    font-family: var(--font-serif);
+  }
+}
+
+.gold-radial-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.16) 0%, rgba(7, 13, 10, 0) 70%);
+}
+
+.gold-glow-subtle {
+  box-shadow: 0 0 45px -10px rgba(212, 175, 55, 0.22), 0 0 20px -5px rgba(27, 53, 40, 0.4);
+}
+
+.luxury-card-shadow {
+  box-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.9), 0 0 16px 0 rgba(212, 175, 55, 0.08);
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
