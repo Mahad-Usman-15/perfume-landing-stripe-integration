@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown} from 'lucide-react';
 import { FAQS } from '../data/fragranceData';
 
 export const FaqSection: React.FC = () => {
@@ -51,7 +51,6 @@ export const FaqSection: React.FC = () => {
                   className="w-full flex items-center justify-between text-left cursor-pointer focus:outline-none"
                 >
                   <span className="text-base sm:text-lg font-semibold text-[#f1f5f2] pr-4 flex items-center gap-3">
-                    <HelpCircle className="w-4 h-4 text-[#d4af37] shrink-0" />
                     <span>{faq.question}</span>
                   </span>
                   <div className={`w-8 h-8 rounded-full border border-[#1b3528] bg-[#070d0a] flex items-center justify-center shrink-0 text-[#d4af37] transition-transform duration-300 ${isOpen ? 'rotate-180 border-[#d4af37]' : ''}`}>
