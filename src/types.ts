@@ -53,3 +53,5 @@ export interface PlacedOrder extends OrderFormData {
   deliveryFee: number;
   total: number;
 }
+
+export * from './types/checkout';
