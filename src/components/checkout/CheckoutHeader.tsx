@@ -40,7 +40,7 @@ export const CheckoutHeader: React.FC<CheckoutHeaderProps> = ({ onBackToShop }) 
           title="Return to store"
         >
           <ArrowLeft className="w-4 h-4 text-[#d4af37]" />
-          <span className="hidden sm:inline font-medium">Back to Store</span>
+          <span className="hidden sm:inline font-medium">Back</span>
           <span className="sm:hidden font-medium">Back</span>
         </button>
       </div>
