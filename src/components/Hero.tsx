@@ -88,7 +88,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal }) => {
                 <span className="w-5 h-5 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/50 text-[#d4af37] flex items-center justify-center text-xs font-bold shrink-0">
                   <Check className="w-3.5 h-3.5 text-[#d4af37] stroke-[3]" />
                 </span>
-                <span className="font-medium">100ml Extrait De Parfum</span>
+                <span className="font-medium">100ml Full Size Bottle</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/50 text-[#d4af37] flex items-center justify-center text-xs font-bold shrink-0">

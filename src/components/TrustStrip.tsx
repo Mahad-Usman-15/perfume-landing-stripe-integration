@@ -28,7 +28,7 @@ export const TrustStrip: React.FC = () => {
     {
       customIcon: <Timer className="w-6 h-6 text-[#d4af37]" />,
       title: 'Long Lasting',
-      subtitle: 'Extrait concentration endurance'
+      subtitle: '12–16+ hours all-day endurance'
     }
   ];
 

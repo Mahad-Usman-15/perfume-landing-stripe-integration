@@ -19,7 +19,7 @@ export const ASSETS = {
 };
 
 export const PRODUCT_DETAILS = {
-  name: 'Khushboo Extrait De Parfum',
+  name: 'Khushboo Premium Perfume',
   volume: '100ml / 3.4 FL.OZ',
   regularPrice: 2667,
   discountPrice: 2000,
@@ -75,7 +75,7 @@ export const BENEFITS: Benefit[] = [
     id: 'b1',
     icon: 'schedule',
     title: 'Long Lasting Performance',
-    description: 'A fragrance created to stay with you throughout your day. Formulated with Extrait-level oil concentration.'
+    description: 'A fragrance created to stay with you throughout your day. Formulated with high perfume oil concentration for long-lasting performance.'
   },
   {
     id: 'b2',
@@ -176,7 +176,7 @@ export const FAQS: FaqItem[] = [
   {
     id: 'faq1',
     question: 'How long does Khushboo last?',
-    answer: 'Khushboo is designed for strong performance and lasting presence. As an Extrait de Parfum concentration, users report lingering projection between 12 to 16+ hours on skin and multiple days on cotton or wool suits.'
+    answer: 'Khushboo is designed for strong performance and lasting presence. Formulated with high oil concentration, users report lingering projection between 12 to 16+ hours on skin and multiple days on cotton or wool suits.'
   },
   {
     id: 'faq2',

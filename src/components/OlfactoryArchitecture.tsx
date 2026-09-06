@@ -26,7 +26,7 @@ export const OlfactoryArchitecture: React.FC = () => {
             A Signature Scent With A Powerful Journey
           </h2>
           <p className="text-base sm:text-lg text-[#9eaba2] mt-4 font-normal leading-relaxed">
-            Engineered as a high-density Extrait de Parfum to develop purposefully across your skin throughout 14+ hours.
+            Engineered with high perfume oil concentration to develop purposefully across your skin throughout 14+ hours.
           </p>
         </div>
 

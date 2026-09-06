@@ -44,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               KHUSHBOO
             </span>
             <span className="text-[9px] uppercase tracking-[0.3em] text-[#9eaba2] hidden sm:block -mt-1 font-medium">
-              Extrait De Parfum
+              Luxury Fragrance
             </span>
           </div>
         </a>

@@ -39,7 +39,7 @@ export const OfferSection: React.FC<OfferSectionProps> = ({ onOpenOrderModal }) 
               >
                 <img
                   src={ASSETS.offerPromo}
-                  alt="Khushboo 100ml Special Offer Extrait De Parfum Presentation"
+                  alt="Khushboo 100ml Special Offer Premium Perfume Presentation"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
                   referrerPolicy="no-referrer"
                 />
@@ -68,7 +68,7 @@ export const OfferSection: React.FC<OfferSectionProps> = ({ onOpenOrderModal }) 
                 <p className="text-sm sm:text-base text-[#9eaba2] mt-1 sm:mt-1.5 font-medium">
                   Product:{' '}
                   <span className="text-[#f1f5f2] font-semibold">
-                    Khushboo 100ml Extrait De Parfum
+                    Khushboo 100ml Premium Edition
                   </span>
                 </p>
               </div>
@@ -170,7 +170,7 @@ export const OfferSection: React.FC<OfferSectionProps> = ({ onOpenOrderModal }) 
               {/* Authenticity guarantee footer */}
               <p className="text-[11px] sm:text-xs text-[#9eaba2] text-center sm:text-left flex items-center gap-1.5 justify-center sm:justify-start">
                 <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d4af37] shrink-0" />
-                <span>100% Authentic Extrait Formula • Dispatched within 24 Hours</span>
+                <span>100% Authentic Original Formula • Dispatched within 24 Hours</span>
               </p>
             </div>
           </div>
