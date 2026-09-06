@@ -1,6 +1,5 @@
 import React from 'react';
 import { ASSETS } from '../data/fragranceData';
-import { ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -30,8 +29,8 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Nav Links */}
-          <div className="flex flex-wrap gap-x-8 gap-y-3 text-xs tracking-wider uppercase">
+          {/* Quick Nav Links: vertical on mobile, horizontal on tablet (sm) and desktop (md/lg) */}
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-y-3.5 sm:gap-y-2 gap-x-8 text-xs tracking-wider uppercase">
             <a href="#hero" className="hover:text-[#d4af37] transition-colors">
               The Fragrance
             </a>
@@ -47,18 +46,6 @@ export const Footer: React.FC = () => {
             <a href="#faq" className="hover:text-[#d4af37] transition-colors">
               FAQ
             </a>
-          </div>
-        </div>
-
-        {/* Brand statement & authenticity notice */}
-        <div className="py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 text-xs text-[#9eaba2]/80">
-          <p className="max-w-xl leading-relaxed">
-            Khushboo Extrait De Parfum is masterfully formulated using high-density fragrance oils. Crafted for all-day projection and presence across climate variations.
-          </p>
-
-          <div className="flex items-center gap-2 text-xs text-[#d4af37]">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Guaranteed Authentic Batch • 100% Quality Sealed</span>
           </div>
         </div>
       </div>
