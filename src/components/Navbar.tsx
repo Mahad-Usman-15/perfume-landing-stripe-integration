@@ -16,7 +16,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { name: 'Olfactory Notes', href: '#notes' },
     { name: 'Executive Heritage', href: '#heritage' },
     { name: 'Client Reviews', href: '#testimonials' },
-    { name: 'FAQ', href: '#faq' }
+    { name: 'FAQS', href: '#faq' }
   ];
 
   return (

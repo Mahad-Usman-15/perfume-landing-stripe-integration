@@ -44,7 +44,7 @@ export const Footer: React.FC = () => {
               Client Reviews
             </a>
             <a href="#faq" className="hover:text-[#d4af37] transition-colors">
-              FAQ
+              FAQS
             </a>
           </div>
         </div>
