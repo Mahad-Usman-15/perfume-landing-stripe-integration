@@ -1,4 +1,5 @@
 import { OlfactoryNote, Testimonial, FaqItem, Benefit } from '../types';
+import { PRODUCT } from '../../shared/checkout';
 import logoImg from '../assets/logo.png';
 import heroImg from '../assets/hero.png';
 import discountImg from '../assets/discount.png';
@@ -19,15 +20,15 @@ export const ASSETS = {
 };
 
 export const PRODUCT_DETAILS = {
-  name: 'Khushboo Premium Perfume',
-  volume: '100ml / 3.4 FL.OZ',
-  regularPrice: 2667,
-  discountPrice: 2000,
-  savings: 667,
-  discountPercentage: 25,
+  name: PRODUCT.name,
+  volume: PRODUCT.volume,
+  regularPrice: PRODUCT.regularAmount / 100,
+  discountPrice: PRODUCT.unitAmount / 100,
+  savings: (PRODUCT.regularAmount - PRODUCT.unitAmount) / 100,
+  discountPercentage: Math.round((1 - PRODUCT.unitAmount / PRODUCT.regularAmount) * 100),
   offerExpiry: '15 September',
-  deliveryCost: 0,
-  savedDelivery: 250,
+  deliveryCost: PRODUCT.shippingAmount / 100,
+  savedDelivery: PRODUCT.savedDeliveryAmount / 100,
   currency: 'Rs.'
 };
 
@@ -186,7 +187,7 @@ export const FAQS: FaqItem[] = [
   {
     id: 'faq3',
     question: 'What payment methods are accepted?',
-    answer: 'We accept secure online bank transfers, debit/credit cards, and verified digital payment methods with instant order confirmation and express nationwide courier dispatch.'
+    answer: 'We accept debit and credit card payments through Stripe. Your payment is confirmed after Stripe completes processing; delivery is arranged separately.'
   },
   {
     id: 'faq4',

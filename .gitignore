@@ -1,7 +1,11 @@
 node_modules/
 build/
 dist/
+/server.js
 coverage/
+tests/browser/__screenshots__/
+test-results/
+playwright-report/
 .DS_Store
 *.log
 .env*

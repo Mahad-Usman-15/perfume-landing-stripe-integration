@@ -1,11 +1,6 @@
-export interface CustomerDetails {
-  fullName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  notes?: string;
-}
+import type { CreatePaymentIntentRequest } from '../../shared/checkout';
+
+export type CustomerDetails = CreatePaymentIntentRequest['customer'];
 
 export interface CheckoutItem {
   productId: string;
@@ -26,39 +21,9 @@ export interface CheckoutSummary {
   currency: string;
 }
 
-export type PaymentMethodType = 'stripe_card';
-
-export interface CardPlaceholderData {
-  cardNumber: string;
-  expiry: string;
-  cvc: string;
-  nameOnCard: string;
-}
-
-/**
- * Structured checkout data model designed for Phase 2 backend Stripe PaymentIntent integration.
- * In Phase 2, this payload is sent to /api/create-payment-intent to initiate Stripe payment.
- */
-export interface CheckoutPayload {
-  customer: CustomerDetails;
-  items: CheckoutItem[];
-  summary: CheckoutSummary;
-  paymentMethod: PaymentMethodType;
-  cardPlaceholder?: CardPlaceholderData;
-  clientMetadata: {
-    source: string;
-    userAgent?: string;
-    locale: string;
-    currency: string;
-  };
-  stripePaymentIntentId?: string;
-  status: 'pending' | 'processing' | 'succeeded';
-  createdAt: string;
-}
-
-export interface PlacedOrderConfirmation {
-  orderId: string;
-  createdAt: string;
-  estimatedDelivery: string;
-  payload: CheckoutPayload;
+export interface PaymentReceipt {
+  id: string;
+  amount: number;
+  currency: string;
+  status: 'succeeded';
 }
