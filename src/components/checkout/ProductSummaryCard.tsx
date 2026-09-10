@@ -59,7 +59,7 @@ export const ProductSummaryCard: React.FC<ProductSummaryCardProps> = ({
               Rs. {item.regularPrice.toLocaleString()}
             </span>
             <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-              25% OFF
+              {Math.round((1 - item.unitPrice / item.regularPrice) * 100)}% OFF
             </span>
           </div>
 
@@ -111,8 +111,8 @@ export const ProductSummaryCard: React.FC<ProductSummaryCardProps> = ({
         <div className="flex justify-between text-[#9eaba2]">
           <span>Nationwide Express Shipping</span>
           <div className="text-right">
-            <span className="text-emerald-400 font-semibold uppercase text-xs">FREE</span>
-            <span className="text-[11px] text-[#9eaba2]/60 line-through ml-1.5">Rs. 250</span>
+            <span className="text-emerald-400 font-semibold uppercase text-xs">{summary.shipping === 0 ? 'FREE' : `Rs. ${summary.shipping.toLocaleString()}`}</span>
+            <span className="text-[11px] text-[#9eaba2]/60 line-through ml-1.5">Rs. {summary.savedShipping.toLocaleString()}</span>
           </div>
         </div>
 

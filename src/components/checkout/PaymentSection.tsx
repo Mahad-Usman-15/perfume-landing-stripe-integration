@@ -1,138 +1,119 @@
-import React from 'react';
-import { PaymentMethodType, CardPlaceholderData } from '../../types/checkout';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import type { PaymentIntent } from '@stripe/stripe-js';
+import type { PaymentReceipt } from '../../types/checkout';
 
-interface PaymentSectionProps {
-  paymentMethod: PaymentMethodType;
-  onPaymentMethodChange: (method: PaymentMethodType) => void;
-  cardData: CardPlaceholderData;
-  onCardDataChange: (field: keyof CardPlaceholderData, value: string) => void;
-  errors?: { [key: string]: string };
-}
+export function PaymentSection({ clientSecret, paymentIntentId, onSuccess, onCanceled, details, summary }: {
+  clientSecret: string;
+  paymentIntentId: string;
+  onSuccess: (receipt: PaymentReceipt) => void;
+  onCanceled: () => void;
+  details?: ReactNode;
+  summary?: ReactNode;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [status, setStatus] = useState<PaymentIntent.Status | null>(null);
+  const [amount, setAmount] = useState('');
+  const [message, setMessage] = useState('Checking payment status...');
+  const [busy, setBusy] = useState(false);
+  const [ready, setReady] = useState(false);
+  const guard = useRef(false);
 
-export const PaymentSection: React.FC<PaymentSectionProps> = ({
-  paymentMethod,
-  onPaymentMethodChange,
-  cardData,
-  onCardDataChange,
-  errors = {}
-}) => {
-  return (
-    <section className="bg-[#0a120e] border border-[#1b3528] rounded-2xl p-5 sm:p-7 shadow-xl">
-      <div className="flex items-center justify-between pb-4 sm:pb-5 border-b border-[#1b3528]/80 mb-5 sm:mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#d4af37]/10 border border-[#d4af37]/40 flex items-center justify-center text-[#d4af37] font-serif font-bold text-sm">
-            2
-          </div>
-          <div>
-            <h2 className="font-serif text-lg sm:text-xl font-bold text-[#f1f5f2] tracking-wide">
-              Payment Method
-            </h2>
-            <p className="text-xs text-[#9eaba2] mt-0.5">
-              100% Safe & Secure Online Payment
-            </p>
-          </div>
-        </div>
+  function receive(intent: PaymentIntent) {
+    if (intent.id !== paymentIntentId) throw new Error();
+    setStatus(intent.status);
+    if (intent.status === 'canceled') onCanceled();
+    if (!['requires_payment_method', 'requires_action', 'requires_confirmation'].includes(intent.status)) setReady(false);
+    setAmount(new Intl.NumberFormat('en-PK', { style: 'currency', currency: intent.currency }).format(intent.amount / 100));
+    if (intent.status === 'succeeded') {
+      onSuccess({ id: intent.id, amount: intent.amount, currency: intent.currency, status: 'succeeded' });
+      return;
+    }
+    const messages: Record<Exclude<PaymentIntent.Status, 'succeeded'>, string> = {
+      processing: 'Your payment is processing. Do not pay again. Check its status below.',
+      requires_payment_method: 'Enter your card details to pay securely. If a previous attempt failed, you can retry this same payment.',
+      requires_action: 'Your bank requires authentication. Continue payment to complete verification.',
+      requires_confirmation: 'Your payment is ready for confirmation. Continue below.',
+      requires_capture: 'Your payment is authorized but not yet captured. Do not pay again. Check its status below.',
+      canceled: 'This payment was canceled. It cannot be retried. Return to the shop if you want to start again.',
+    };
+    setMessage(messages[intent.status]);
+  }
 
-        <div className="text-xs text-[#d4af37]">
-          <span className="font-medium hidden sm:inline">Stripe Verified</span>
-        </div>
-      </div>
+  async function checkStatus() {
+    if (!stripe || guard.current) return;
+    guard.current = true;
+    setBusy(true);
+    try {
+      const result = await stripe.retrievePaymentIntent(clientSecret);
+      if (result.error || !result.paymentIntent) throw new Error();
+      receive(result.paymentIntent);
+    } catch {
+      setStatus(null);
+      setReady(false);
+      setMessage('Unable to verify payment status. Check again before attempting any payment.');
+    } finally { guard.current = false; setBusy(false); }
+  }
 
-      {/* Payment Method Banner: Credit / Debit Card Only */}
-      <div className="rounded-xl border border-[#d4af37]/50 bg-[#0c1912] p-4 flex items-center justify-between mb-5 ring-1 ring-[#d4af37]/30 shadow-md">
-        <div>
-          <span className="text-sm font-bold text-[#f1f5f2] block">Credit / Debit Card</span>
-          <span className="text-xs text-[#9eaba2]">Powered by Stripe • Instant & Secure Payment</span>
-        </div>
-        <div className="text-xs text-[#d4af37] font-semibold bg-[#d4af37]/10 border border-[#d4af37]/30 px-3 py-1 rounded-full">
-          Selected
-        </div>
-      </div>
+  useEffect(() => { void checkStatus(); }, [stripe, clientSecret]);
 
-      {/* ISOLATED PAYMENT COMPONENT CONTAINER */}
-      {/* In Phase 2: Insert <Elements stripe={stripePromise}><PaymentElement /></Elements> inside this container */}
-      <div id="stripe-payment-integration-container" className="pt-1">
-        <div className="rounded-xl border border-[#1b3528] bg-[#050907] p-4 sm:p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#1b3528]">
-            <span className="text-xs font-semibold text-[#f1f5f2] uppercase tracking-wider">
-              Card Information
-            </span>
-            <div className="flex items-center gap-1.5 text-[11px] text-[#9eaba2]">
-              <span className="px-1.5 py-0.5 rounded bg-[#0c1510] border border-[#1b3528] font-mono text-[10px]">VISA</span>
-              <span className="px-1.5 py-0.5 rounded bg-[#0c1510] border border-[#1b3528] font-mono text-[10px]">MC</span>
-              <span className="px-1.5 py-0.5 rounded bg-[#0c1510] border border-[#1b3528] font-mono text-[10px]">AMEX</span>
-            </div>
-          </div>
+  const canPay = status === 'requires_payment_method' || status === 'requires_action' || status === 'requires_confirmation';
+  async function confirm() {
+    if (!stripe || !elements || !ready || !canPay || guard.current) return;
+    guard.current = true;
+    setBusy(true);
+    setMessage('Confirming payment securely...');
+    try {
+      const result = await stripe.confirmPayment({
+        elements,
+        confirmParams: { return_url: `${window.location.origin}/checkout` },
+        redirect: 'if_required',
+      });
+      if (result.error) {
+        // Retrieve authoritative status before enabling retries after an ambiguous failure.
+        const current = await stripe.retrievePaymentIntent(clientSecret);
+        if (current.error || !current.paymentIntent) throw new Error();
+        receive(current.paymentIntent);
+        if (['requires_payment_method', 'requires_action', 'requires_confirmation'].includes(current.paymentIntent.status)) setMessage(result.error.message || 'Payment failed. Check your card details and retry.');
+      } else if (result.paymentIntent) receive(result.paymentIntent);
+      else throw new Error();
+    } catch {
+      setStatus(null);
+      setReady(false);
+      setMessage('Payment status is uncertain. Check status below before retrying; do not start another payment.');
+    } finally { guard.current = false; setBusy(false); }
+  }
 
-          {/* Non-technical security note */}
-          <div className="bg-[#0c1510] border border-[#1b3528] rounded-lg p-3 text-xs text-[#9eaba2]">
-            <p className="text-[#f1f5f2] font-medium">Bank-Grade Payment Security</p>
-            <p className="text-[11px] text-[#9eaba2]/80 leading-relaxed mt-0.5">
-              Your payment is handled with strict bank-level protection. In Phase 2, this section will mount the official Stripe Card Element.
-            </p>
-          </div>
-
-          {/* Card Number */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
-              Card Number
-            </label>
-            <input
-              type="text"
-              placeholder="4242 •••• •••• 4242"
-              maxLength={19}
-              value={cardData.cardNumber}
-              onChange={(e) => onCardDataChange('cardNumber', e.target.value)}
-              className="w-full bg-[#070d0a] border border-[#1b3528] rounded-xl px-4 py-2.5 sm:py-3 text-sm text-[#f1f5f2] font-mono placeholder-[#9eaba2]/40 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]/30 transition-colors"
-            />
-          </div>
-
-          {/* Expiry & CVC Grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
-                Expiration
-              </label>
-              <input
-                type="text"
-                placeholder="MM / YY"
-                maxLength={5}
-                value={cardData.expiry}
-                onChange={(e) => onCardDataChange('expiry', e.target.value)}
-                className="w-full bg-[#070d0a] border border-[#1b3528] rounded-xl px-4 py-2.5 sm:py-3 text-sm text-[#f1f5f2] font-mono placeholder-[#9eaba2]/40 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]/30 transition-colors"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
-                CVC / CVV
-              </label>
-              <input
-                type="password"
-                placeholder="•••"
-                maxLength={4}
-                value={cardData.cvc}
-                onChange={(e) => onCardDataChange('cvc', e.target.value)}
-                className="w-full bg-[#070d0a] border border-[#1b3528] rounded-xl px-4 py-2.5 sm:py-3 text-sm text-[#f1f5f2] font-mono placeholder-[#9eaba2]/40 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]/30 transition-colors"
-              />
-            </div>
-          </div>
-
-          {/* Cardholder Name */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
-              Name on Card
-            </label>
-            <input
-              type="text"
-              placeholder="Cardholder Name"
-              value={cardData.nameOnCard}
-              onChange={(e) => onCardDataChange('nameOnCard', e.target.value)}
-              className="w-full bg-[#070d0a] border border-[#1b3528] rounded-xl px-4 py-2.5 sm:py-3 text-sm text-[#f1f5f2] placeholder-[#9eaba2]/40 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]/30 transition-colors"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+  const button = (
+    <button type="submit" disabled={!stripe || !elements || !ready || busy || !canPay} className="w-full py-4 px-6 rounded-xl bg-[#d4af37] text-[#070d0a] font-bold hover:bg-[#dfba44] disabled:opacity-50 disabled:cursor-not-allowed">
+      {busy ? 'Checking Payment...' : `Pay Securely${amount ? ` - ${amount}` : ''}`}
+    </button>
   );
-};
+  return <form onSubmit={event => { event.preventDefault(); void confirm(); }} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div className="lg:col-span-7 space-y-6">
+      <p className="text-sm text-[#9eaba2]">Details and quantity are locked for this payment. You can retry payment without re-entering your details. To leave checkout, use Return to Shop; this does not cancel the payment.</p>
+      {details}
+      <section className="bg-[#0a120e] border border-[#1b3528] rounded-2xl p-5 sm:p-7 space-y-5">
+        <h2 className="font-serif text-xl font-bold">Credit / Debit Card</h2>
+        <p className="text-xs text-[#9eaba2]">Card details are collected securely by Stripe.</p>
+        <p role="status" aria-live="polite" className="text-sm text-[#d4af37]">{message}</p>
+        {canPay && (
+          <div id="stripe-payment-integration-container">
+            <PaymentElement
+              options={{ layout: 'tabs', paymentMethodOrder: ['card'], wallets: { applePay: 'never', googlePay: 'never' } }}
+              onReady={() => setReady(true)}
+              onLoadError={() => {
+                setReady(false);
+                setMessage('Secure card fields could not load. Reload this page to recover the same payment.');
+              }}
+            />
+          </div>
+        )}
+        <button type="button" disabled={!stripe || busy} onClick={() => void checkStatus()} className="text-xs text-[#d4af37] underline disabled:opacity-50">Check Payment Status</button>
+      </section>
+      <div className="lg:hidden">{button}</div>
+    </div>
+    <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">{summary}<div className="hidden lg:block">{button}</div></div>
+  </form>;
+}

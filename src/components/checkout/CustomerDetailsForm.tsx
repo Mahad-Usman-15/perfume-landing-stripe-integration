@@ -40,7 +40,7 @@ export const CustomerDetailsForm: React.FC<CustomerDetailsFormProps> = ({
       <div className="space-y-4 sm:space-y-5">
         {/* Full Name */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
+          <label htmlFor="checkout-fullname" className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
             Full Name <span className="text-[#d4af37]">*</span>
           </label>
           <input
@@ -66,7 +66,7 @@ export const CustomerDetailsForm: React.FC<CustomerDetailsFormProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Email */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
+            <label htmlFor="checkout-email" className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
               Email Address <span className="text-[#d4af37]">*</span>
             </label>
             <input
@@ -86,13 +86,13 @@ export const CustomerDetailsForm: React.FC<CustomerDetailsFormProps> = ({
             {touched.email && errors.email ? (
               <p className="text-xs text-rose-400 mt-1.5 pl-1">{errors.email}</p>
             ) : (
-              <p className="text-[11px] text-[#9eaba2]/70 mt-1 pl-1">For order confirmation & tracking</p>
+              <p className="text-[11px] text-[#9eaba2]/70 mt-1 pl-1">Email for your payment receipt</p>
             )}
           </div>
 
           {/* Phone Number */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
+            <label htmlFor="checkout-phone" className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
               Phone Number <span className="text-[#d4af37]">*</span>
             </label>
             <input
@@ -121,7 +121,7 @@ export const CustomerDetailsForm: React.FC<CustomerDetailsFormProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* City Input */}
           <div className="sm:col-span-1">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
+            <label htmlFor="checkout-city" className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
               City <span className="text-[#d4af37]">*</span>
             </label>
             <input
@@ -145,7 +145,7 @@ export const CustomerDetailsForm: React.FC<CustomerDetailsFormProps> = ({
 
           {/* Delivery Address */}
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
+            <label htmlFor="checkout-address" className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
               Street / House Address <span className="text-[#d4af37]">*</span>
             </label>
             <input
@@ -170,7 +170,7 @@ export const CustomerDetailsForm: React.FC<CustomerDetailsFormProps> = ({
 
         {/* Optional Delivery Notes */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
+          <label htmlFor="checkout-notes" className="block text-xs font-semibold uppercase tracking-wider text-[#9eaba2] mb-1.5">
             Special Delivery Notes <span className="text-[#9eaba2]/50 font-normal lowercase">(optional)</span>
           </label>
           <textarea
@@ -180,8 +180,10 @@ export const CustomerDetailsForm: React.FC<CustomerDetailsFormProps> = ({
             placeholder="e.g. Leave package with guard or call before arrival"
             value={formData.notes || ''}
             onChange={(e) => onChange('notes', e.target.value)}
+            onBlur={() => onBlur('notes')}
             className="w-full bg-[#050907] border border-[#1b3528] rounded-xl px-4 py-2.5 text-sm text-[#f1f5f2] placeholder-[#9eaba2]/40 transition-colors focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]/30 hover:border-[#274837]"
           />
+          {touched.notes && errors.notes && <p className="text-xs text-rose-400 mt-1.5">{errors.notes}</p>}
         </div>
       </div>
     </section>
