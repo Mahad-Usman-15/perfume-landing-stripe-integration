@@ -155,11 +155,11 @@ const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
 };
 app.use(handleError);
 
-if (production) {
+if (process.env.VERCEL !== '1' && production) {
   const dist = path.resolve('dist');
   app.use(express.static(dist));
   app.get('*', (_req, res) => res.sendFile(path.join(dist, 'index.html')));
-} else {
+} else if (process.env.VERCEL !== '1') {
   const { createServer: createViteServer } = await import('vite');
   const vite = await createViteServer({
     server: {
@@ -171,7 +171,10 @@ if (production) {
   app.use(vite.middlewares);
 }
 
-server.listen(port, '0.0.0.0', () => {
-  console.info(`Server listening on port ${port}`);
-});
+if (process.env.VERCEL !== '1') {
+  server.listen(port, '0.0.0.0', () => {
+    console.info(`Server listening on port ${port}`);
+  });
+}
 
+export default app;

@@ -6,6 +6,8 @@
 
 ## Architecture
 
+- Vercel exception: `api/index.ts` exports the same Express app as a Function; `vercel.json` publishes Vite `dist/` assets and routes `/api` before the SPA fallback. With Vercel's `VERCEL=1`, do not start a listener, Vite middleware, or Express static serving. Standalone Node hosting retains the single-server architecture. Configure `APP_URL` to the exact deployment browser origin; rate limiting remains per process/instance. Vercel deployment verification is pending until tested on a deployed URL.
+
 - One Express/Node server (`server/index.ts`) owns `/api`, Vite middleware in development, and `dist/` serving in production. API misses must return JSON, never the SPA fallback.
 - React 19 + TypeScript entry is `index.html` -> `src/main.tsx` -> `src/App.tsx`. One React Router `BrowserRouter` in `main.tsx` wraps App's routes for `/` and `/checkout`; unknown paths render the landing page. Use router navigation rather than manual history mutations.
 - Preserve Stripe return parameters until checkout's pure recovery initializer captures them, then scrub with replace navigation after StrictMode initialization. Parse and clamp `qty` to 1-10 in the checkout route adapter; it seeds initial quantity only. Do not key/remount checkout or reset active payment state on query changes.

@@ -31,6 +31,16 @@ Use the Express server for direct URL/reload support in development and producti
 
 ## Production
 
+### Vercel
+
+Deploy from the repository root. `vercel.json` uses the Vite preset, runs `npm run build`, and publishes `dist/`. The tracked `api/index.ts` exports the existing Express application as a Vercel Function; `/api` and `/api/*` route there before the SPA fallback. Vercel serves frontend assets directly. The generated root `server.js` is for standalone Node hosting, not the Vercel function entry.
+
+Set `VITE_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `APP_URL` in Vercel's environment settings, then redeploy. `APP_URL` must exactly match the browser origin (scheme and hostname, including a port if present). Preview URLs need their own matching environment configuration. Vercel supplies `VERCEL=1`; this prevents the function from starting a listener or Vite middleware. Point the Stripe webhook endpoint to `https://YOUR_DOMAIN/api/webhook`.
+
+After deploying, verify `/checkout` loads and `/api/unknown` returns JSON 404 rather than HTML. Confirm checkout POSTs reach Express in Chrome's Network tab. The rate limiter remains process-local and is not shared across function instances. Deployment and actual Stripe payment/3DS verification are still required.
+
+### Standalone Node
+
 ```bash
 npm run lint
 npm run build
