@@ -7,7 +7,7 @@ import {
   PRODUCT,
   createPaymentIntentRequestSchema,
   type CreatePaymentIntentResponse,
-} from '../shared/checkout';
+} from '../shared/checkout.js';
 
 const app = express();
 const server = createServer(app);
