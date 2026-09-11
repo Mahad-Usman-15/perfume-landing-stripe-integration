@@ -2,9 +2,11 @@
 
 ## Branching
 
-- All feature changes must be developed and committed through a separate feature branch (never directly on `master`/`stripe-api`). Branch from the base branch, commit there, and merge back only after verification.
+- `main` is the canonical branch. Develop feature changes on a separate branch from up-to-date `main`, commit there, and merge back after verification. Before deleting a branch, fetch remote refs and verify its tip is an ancestor of `main`; preserve any unmerged work.
 
 ## Architecture
+
+- Use explicit `.js` extensions for relative imports in the Vercel server-side TypeScript module graph (for example, `api/index.ts` imports `../server/index.js`). TypeScript resolves the source `.ts` files; Node ESM needs the emitted `.js` paths. Extensionless imports caused production `ERR_MODULE_NOT_FOUND` failures.
 
 - Vercel exception: `api/index.ts` exports the same Express app as a Function; `vercel.json` publishes Vite `dist/` assets and routes `/api` before the SPA fallback. With Vercel's `VERCEL=1`, do not start a listener, Vite middleware, or Express static serving. Standalone Node hosting retains the single-server architecture. Configure `APP_URL` to the exact deployment browser origin; rate limiting remains per process/instance. Vercel deployment verification is pending until tested on a deployed URL.
 
@@ -25,7 +27,7 @@
 - `npm run preview` serves only Vite assets, not the Stripe API; use `npm start` to verify the complete production application.
 - Vitest Browser Mode uses Chromium: `npm run test:install` installs the headless browser, `npm run test:landing` runs desktop/mobile landing journeys, `npm test` runs all tests, and `npm run test:watch` watches. Focus cases with `npm run test:landing -- -t "offer quantity"`.
 - `vitest.config.ts` intentionally disables `.env` loading and supplies a dummy publishable key. Browser tests mock Stripe and block external/API/POST requests. Keep this isolated from real credentials; these UI journeys do not test the Express backend or actual payments.
-- Chrome DevTools MCP is connected and available for end-to-end testing. Run `npm run dev`, then use DevTools tools (`new_page`/`navigate_page` to `http://localhost:3000`, `take_snapshot`, `click`/`fill_form`, `take_screenshot`, `emulate` for mobile viewport) to execute live UI journeys against the real dev server. Verify landing -> checkout navigation, `qty` clamp (1-10), quantity locking after intent creation, and responsive behavior this way when Vitest browser mode cannot run. Never enter real card data or real credentials; use Stripe test card numbers only.
+- Check that Chrome DevTools MCP tools are actually available in the current session before starting browser testing. `.mcp.json` launches Windows Chrome through `cmd.exe` from WSL; preserve that setup. When connected, run `npm run dev` and use DevTools to verify landing -> checkout navigation, `qty` clamp (1-10), quantity locking after intent creation, and desktop/mobile layouts. Never enter real card data or real credentials; use Stripe test card numbers only.
 
 ## Directory Guide
 
@@ -53,5 +55,6 @@
 
 - Phase 1, custom checkout UI: complete. Keep landing and checkout styling and responsive behavior consistent.
 - Phase 2, Stripe integration: implemented, pending real Stripe test-mode payment/3DS and browser verification. No database. Do not call it production-verified from lint/build alone.
-- Phase 3: Vitest landing browser journeys are configured, but Chromium download timeouts have blocked execution. Do not claim passing browser coverage until run. Backend/payment E2E remains pending, including invalid details, tampering, retry/recovery and success/decline/3DS in Stripe test mode. Chrome DevTools MCP is the fallback for live browser verification against `npm run dev` (see Commands).
+- Phase 3: Vitest configuration and scripts exist, but the current checkout contains no `tests/` files. Restore or implement the referenced suites before claiming browser coverage. Chrome DevTools MCP tools were unavailable in the recent session. Local API checks previously exercised validation, origin checks, intent creation and idempotency; browser/payment E2E remains pending.
+- Latest Vercel fix: explicit `.js` imports added after production `ERR_MODULE_NOT_FOUND`. Typecheck and server/API JavaScript compilation passed; full Vite build and runtime smoke checks timed out. A deployed retest is required; do not describe the fix as production-verified yet.
 - Update this file, README setup and relevant scripts/config together when changing runtime, API, environment variables or phase status.

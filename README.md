@@ -1,6 +1,10 @@
 # Khushboo Checkout
 
-React/Vite custom checkout with Stripe Payment Element, served by one Express Node process. No database or local order storage: payments, shipping details, product/quantity metadata and refunds are managed in Stripe Dashboard. The PaymentIntent ID is the order reference.
+React/Vite custom checkout with Stripe Payment Element. Standalone hosting uses one Express Node process; Vercel serves the frontend assets and runs the same Express API as a Function. No database or local order storage: payments, shipping details, product/quantity metadata and refunds are managed in Stripe Dashboard. The PaymentIntent ID is the order reference.
+
+## Repository workflow
+
+`main` is the canonical branch. Start feature branches from up-to-date `main`, verify changes before merging, and delete branches only after confirming all their commits are included in `main`.
 
 ## Setup
 
@@ -27,7 +31,7 @@ React Router uses one `BrowserRouter` in `src/main.tsx`. `src/App.tsx` routes `/
 
 The checkout page is a thin adapter around `src/components/checkout/CheckoutPage.tsx`. It parses `qty` with a default of 1 and clamps it to 1-10. Quantity seeds checkout on mount only; changing the query while staying in checkout does not reset customer details, quantity or an active payment. Direct reloads and Stripe returns recover the existing payment instead of creating another one. Return parameters are captured in the checkout's pure initializer before replace navigation scrubs Stripe parameters, preserving other query parameters and the hash and keeping router state synchronized under StrictMode.
 
-Use the Express server for direct URL/reload support in development and production. Any reverse proxy must forward frontend paths such as `/checkout` to that server, while keeping `/api` responses separate from the SPA fallback.
+Use the Express server for direct URL/reload support in development and standalone production. On Vercel, the configured SPA fallback serves frontend routes such as `/checkout`, while `/api` requests go to the Express Function.
 
 ## Production
 
@@ -38,6 +42,18 @@ Deploy from the repository root. `vercel.json` uses the Vite preset, runs `npm r
 Set `VITE_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `APP_URL` in Vercel's environment settings, then redeploy. `APP_URL` must exactly match the browser origin (scheme and hostname, including a port if present). Preview URLs need their own matching environment configuration. Vercel supplies `VERCEL=1`; this prevents the function from starting a listener or Vite middleware. Point the Stripe webhook endpoint to `https://YOUR_DOMAIN/api/webhook`.
 
 After deploying, verify `/checkout` loads and `/api/unknown` returns JSON 404 rather than HTML. Confirm checkout POSTs reach Express in Chrome's Network tab. The rate limiter remains process-local and is not shared across function instances. Deployment and actual Stripe payment/3DS verification are still required.
+
+#### Troubleshooting checkout initialization
+
+Inspect the failed `create-payment-intent` request's HTTP status and response in Chrome's Network tab; the UI shows a generic message for most server errors.
+
+- **404:** confirm the deployed revision includes `api/index.ts` and the API rewrites in `vercel.json`.
+- **500 with `ERR_MODULE_NOT_FOUND`:** Node ESM requires explicit `.js` extensions in relative server imports. The entry imports `../server/index.js`, and the server imports `../shared/checkout.js`. These resolve to TypeScript sources during compilation and JavaScript files at runtime.
+- **403:** check that `APP_URL` exactly matches the address-bar origin. `localhost` and `127.0.0.1` are different origins.
+- **503:** verify the server-side Stripe secret is configured in the correct Vercel environment.
+- **502:** inspect Stripe request diagnostics for an upstream failure, without logging customer fields or client secrets.
+
+The ESM import fix is implemented; successful production retesting has not yet been confirmed.
 
 ### Standalone Node
 
@@ -75,7 +91,9 @@ Use the CLI signing secret locally. For deployment, register the HTTPS `/api/web
 
 ## Verification Status
 
-Typecheck, production builds and server smoke checks have been run previously. Vitest Browser Mode now contains landing-page UI journeys in Chromium at desktop (1440x900) and mobile (390x844) viewports. These render the real app/router, but do not exercise Express or real payments.
+The latest TypeScript check and server/API JavaScript compilation passed. The full Vite build and isolated runtime smoke check timed out; their cause has not been established. Local API checks previously exercised origin/content-type/schema rejection, intent creation, identical-request idempotency, changed-request conflicts, unsigned webhook rejection and JSON API 404 responses. These do not establish deployed or browser payment correctness.
+
+Vitest Browser Mode is configured for desktop (1440x900) and mobile (390x844), but the current repository has no `tests/` files. Restore or implement the suites referenced by the configuration before running:
 
 ```bash
 npm run test:install
@@ -84,9 +102,9 @@ npm run test:landing
 
 `npm test` runs all browser tests; `npm run test:watch` runs watch mode. A focused case can be run with `npm run test:landing -- -t "offer quantity"`. On Linux, missing browser system libraries may require `npx playwright install-deps chromium`.
 
-The standalone `vitest.config.ts` disables `.env` loading, defines a dummy publishable key, and mocks Stripe loading. Tests block external requests, API requests and POSTs; do not replace these safeguards with real credentials. Coverage includes section/image rendering, anchors, FAQ toggling, offer quantities/totals, checkout CTAs, browser history, quantity bounds and unknown-route fallback.
+The standalone `vitest.config.ts` disables `.env` loading, defines a dummy publishable key, and provides network guards for external/API/POST requests. Restored suites must mock Stripe and activate those guards; do not use real credentials in isolated UI tests.
 
-Execution status: Chromium is not installed in the current environment. Download attempts timed out, so no browser assertions have run yet. Typecheck passes. Complete the browser installation and rerun before claiming these journeys pass. The normal production build was not rerun during this testing session because it loads local environment files.
+Browser verification remains pending. Earlier Chromium downloads timed out, and Chrome DevTools MCP tools were unavailable in the recent session. The `.mcp.json` configuration launches Windows Chrome via `cmd.exe` from WSL; verify the MCP connection before attempting live browser testing.
 
 Stripe credentials and browser testing are still required to validate:
 
@@ -97,4 +115,4 @@ Stripe credentials and browser testing are still required to validate:
 - Correct amount, email, shipping and metadata in the matching Stripe test Dashboard.
 - Valid/invalid webhook signatures, repeated events, unavailable keys, origin restrictions and deployment proxy rate limiting.
 
-Phase 1 UI is complete. Phase 2 implementation is present but is not live-payment/browser verified. Phase 3 has landing browser tests configured but not yet executed; full backend/payment E2E coverage remains pending.
+Phase 1 UI is complete. Phase 2 implementation is present but is not live-payment/browser verified. Phase 3 has browser-test tooling configured, with suites still needing restoration or implementation; full backend/payment E2E coverage remains pending.
