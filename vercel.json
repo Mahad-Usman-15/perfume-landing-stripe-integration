@@ -3,7 +3,6 @@
   "buildCommand": "npm run build",
   "functions": {
     "server.js": {
-      "runtime": "nodejs24.14.1",
       "includeFiles": "dist/**"
     }
   },
