@@ -1,5 +1,9 @@
 # Repository Instructions
 
+## Branching
+
+- All feature changes must be developed and committed through a separate feature branch (never directly on `master`/`stripe-api`). Branch from the base branch, commit there, and merge back only after verification.
+
 ## Architecture
 
 - One Express/Node server (`server/index.ts`) owns `/api`, Vite middleware in development, and `dist/` serving in production. API misses must return JSON, never the SPA fallback.
@@ -19,6 +23,7 @@
 - `npm run preview` serves only Vite assets, not the Stripe API; use `npm start` to verify the complete production application.
 - Vitest Browser Mode uses Chromium: `npm run test:install` installs the headless browser, `npm run test:landing` runs desktop/mobile landing journeys, `npm test` runs all tests, and `npm run test:watch` watches. Focus cases with `npm run test:landing -- -t "offer quantity"`.
 - `vitest.config.ts` intentionally disables `.env` loading and supplies a dummy publishable key. Browser tests mock Stripe and block external/API/POST requests. Keep this isolated from real credentials; these UI journeys do not test the Express backend or actual payments.
+- Chrome DevTools MCP is connected and available for end-to-end testing. Run `npm run dev`, then use DevTools tools (`new_page`/`navigate_page` to `http://localhost:3000`, `take_snapshot`, `click`/`fill_form`, `take_screenshot`, `emulate` for mobile viewport) to execute live UI journeys against the real dev server. Verify landing -> checkout navigation, `qty` clamp (1-10), quantity locking after intent creation, and responsive behavior this way when Vitest browser mode cannot run. Never enter real card data or real credentials; use Stripe test card numbers only.
 
 ## Directory Guide
 
@@ -46,5 +51,5 @@
 
 - Phase 1, custom checkout UI: complete. Keep landing and checkout styling and responsive behavior consistent.
 - Phase 2, Stripe integration: implemented, pending real Stripe test-mode payment/3DS and browser verification. No database. Do not call it production-verified from lint/build alone.
-- Phase 3: Vitest landing browser journeys are configured, but Chromium download timeouts have blocked execution. Do not claim passing browser coverage until run. Backend/payment E2E remains pending, including invalid details, tampering, retry/recovery and success/decline/3DS in Stripe test mode.
+- Phase 3: Vitest landing browser journeys are configured, but Chromium download timeouts have blocked execution. Do not claim passing browser coverage until run. Backend/payment E2E remains pending, including invalid details, tampering, retry/recovery and success/decline/3DS in Stripe test mode. Chrome DevTools MCP is the fallback for live browser verification against `npm run dev` (see Commands).
 - Update this file, README setup and relevant scripts/config together when changing runtime, API, environment variables or phase status.
