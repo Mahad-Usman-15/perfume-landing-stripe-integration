@@ -20,13 +20,14 @@
 ## Commands
 
 - `npm install` installs frontend and server dependencies in this single package.
+- `package.json` overrides `qs` to `^6.16.0` because Express 4.22.2 pins an affected older range. The lockfile resolves `qs` 6.16.0 and `body-parser` 1.20.8. Preserve the override until upstream dependencies resolve patched versions without it; run `npm audit` after dependency changes.
 - `npm run dev` runs Express with Vite middleware on `0.0.0.0:3000` (or `PORT`), not two servers.
 - `npm run lint` means `tsc --noEmit`, not ESLint. Run `npm run lint` then `npm run build` for verification.
 - `npm run build` builds `dist/` and bundles the server to root `server.js` with external npm dependencies. Both outputs are generated and ignored; do not edit them.
 - `npm start` serves the production app/API from one Node process after building. Its environment assignment uses POSIX shell syntax.
 - `npm run preview` serves only Vite assets, not the Stripe API; use `npm start` to verify the complete production application.
-- Vitest Browser Mode uses Chromium: `npm run test:install` installs the headless browser, `npm run test:landing` runs desktop/mobile landing journeys, `npm test` runs all tests, and `npm run test:watch` watches. Focus cases with `npm run test:landing -- -t "offer quantity"`.
-- `vitest.config.ts` intentionally disables `.env` loading and supplies a dummy publishable key. Browser tests mock Stripe and block external/API/POST requests. Keep this isolated from real credentials; these UI journeys do not test the Express backend or actual payments.
+- Vitest Browser Mode is configured for Chromium desktop/mobile projects, but `tests/browser/setup.ts` and the test suites are missing. Restore or implement them before using `npm run test:landing`, `npm test`, or `npm run test:watch`. `npm run test:install` installs the headless browser; `test:landing` targets `tests/browser/landing.test.tsx`.
+- `vitest.config.ts` intentionally disables `.env` loading and supplies a dummy publishable key. It defines network-guard commands for external/API/POST requests; restored test setup must activate those guards and mock Stripe. Keep tests isolated from real credentials; these UI journeys do not test the Express backend or actual payments.
 - Check that Chrome DevTools MCP tools are actually available in the current session before starting browser testing. `.mcp.json` launches Windows Chrome through `cmd.exe` from WSL; preserve that setup. When connected, run `npm run dev` and use DevTools to verify landing -> checkout navigation, `qty` clamp (1-10), quantity locking after intent creation, and desktop/mobile layouts. Never enter real card data or real credentials; use Stripe test card numbers only.
 
 ## Directory Guide
@@ -37,7 +38,7 @@
 - `src/components/`: landing sections; `src/components/checkout/`: customer details, staged checkout, Stripe Payment Element, summary and minimal confirmed receipt.
 - `src/types/checkout.ts`: UI checkout models; API models are in `shared/checkout.ts`.
 - `src/assets/` contains bundled images; `public/` contains root-served assets/favicons. Editing a duplicate in `public/` does not update imported images.
-- `src/index.css` and `index.html` define the implemented dark green/black and gold theme, Cormorant Garamond headings and Montserrat body. Older `Khushboo_Design.md` fonts and COD copy are not the current implementation.
+- `src/index.css` and `index.html` define the implemented dark green/black and gold theme, Cormorant Garamond headings and Montserrat body. Treat the implemented UI as the source of truth when older design/copy documents differ.
 
 ## Stripe Rules
 
@@ -56,5 +57,6 @@
 - Phase 1, custom checkout UI: complete. Keep landing and checkout styling and responsive behavior consistent.
 - Phase 2, Stripe integration: implemented, pending real Stripe test-mode payment/3DS and browser verification. No database. Do not call it production-verified from lint/build alone.
 - Phase 3: Vitest configuration and scripts exist, but the current checkout contains no `tests/` files. Restore or implement the referenced suites before claiming browser coverage. Chrome DevTools MCP tools were unavailable in the recent session. Local API checks previously exercised validation, origin checks, intent creation and idempotency; browser/payment E2E remains pending.
-- Latest Vercel fix: explicit `.js` imports added after production `ERR_MODULE_NOT_FOUND`. Typecheck and server/API JavaScript compilation passed; full Vite build and runtime smoke checks timed out. A deployed retest is required; do not describe the fix as production-verified yet.
+- Latest verification (2026-09-11): `npm audit` reported 0 vulnerabilities after the dependency fixes; `npm run lint` and the full `npm run build` passed. The build succeeded on retry with a longer timeout, producing Vite assets and the standalone server bundle.
+- Latest Vercel fix: explicit `.js` imports added after production `ERR_MODULE_NOT_FOUND`. Earlier server/API JavaScript compilation passed, but the isolated runtime smoke check timed out and has not been reverified. A deployed retest is required; do not describe the fix as production-verified yet.
 - Update this file, README setup and relevant scripts/config together when changing runtime, API, environment variables or phase status.

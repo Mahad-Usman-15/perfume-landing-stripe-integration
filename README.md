@@ -16,6 +16,7 @@ Use Node 22 LTS and install dependencies with `npm install`. Configure a local `
 - `APP_URL`: exact public origin, locally `http://localhost:3000`.
 - `PORT`: defaults to 3000.
 - `TRUST_PROXY`: optional trusted proxy IPs/subnets; leave empty for direct connections. Do not trust arbitrary forwarded headers.
+- `DISABLE_HMR`: set to `true` to disable development HMR and file watching.
 
 The existing Gemini variables are unrelated to checkout. Never enter real card data during development. Before live deployment, confirm the merchant's Stripe account eligibility and ability to accept the configured PKR currency; test keys do not establish live account eligibility.
 
@@ -24,6 +25,10 @@ npm run dev
 ```
 
 This runs Express and Vite middleware together, including `/checkout` and `/api`. Missing keys do not stop the server, but checkout is disabled or returns a configuration error.
+
+### Dependency maintenance
+
+`package.json` overrides the transitive dependency `qs` to `^6.16.0` because Express 4.22.2's declared range selects vulnerable older versions. The lockfile resolves `qs` 6.16.0 and `body-parser` 1.20.8. Keep the override until upstream dependencies support patched versions without it. After dependency changes, run `npm audit`, then `npm run lint` and `npm run build`.
 
 ## Routing
 
@@ -91,16 +96,22 @@ Use the CLI signing secret locally. For deployment, register the HTTPS `/api/web
 
 ## Verification Status
 
-The latest TypeScript check and server/API JavaScript compilation passed. The full Vite build and isolated runtime smoke check timed out; their cause has not been established. Local API checks previously exercised origin/content-type/schema rejection, intent creation, identical-request idempotency, changed-request conflicts, unsigned webhook rejection and JSON API 404 responses. These do not establish deployed or browser payment correctness.
+Latest verification on 2026-09-11:
 
-Vitest Browser Mode is configured for desktop (1440x900) and mobile (390x844), but the current repository has no `tests/` files. Restore or implement the suites referenced by the configuration before running:
+- `npm audit`: **0 vulnerabilities**, after resolving the three initially reported moderate vulnerabilities.
+- `npm run lint`: passed (TypeScript checking).
+- `npm run build`: passed, producing Vite `dist/` assets and the standalone `server.js` bundle. The initial attempt timed out; retrying with a longer timeout succeeded. Rollup emitted non-blocking annotation warnings from Zod.
+
+Earlier server/API JavaScript compilation passed. The earlier isolated runtime smoke check timed out and has not been reverified. Local API checks previously exercised origin/content-type/schema rejection, intent creation, identical-request idempotency, changed-request conflicts, unsigned webhook rejection and JSON API 404 responses. These do not establish deployed or browser payment correctness.
+
+Vitest Browser Mode is configured for desktop (1440x900) and mobile (390x844), but the current repository has no `tests/` files. Restore or implement `tests/browser/setup.ts` and the suites, including `tests/browser/landing.test.tsx`, before running:
 
 ```bash
 npm run test:install
 npm run test:landing
 ```
 
-`npm test` runs all browser tests; `npm run test:watch` runs watch mode. A focused case can be run with `npm run test:landing -- -t "offer quantity"`. On Linux, missing browser system libraries may require `npx playwright install-deps chromium`.
+Once suites exist, `npm test` runs all configured browser tests and `npm run test:watch` runs watch mode. Filter a restored test by its name with `npm run test:landing -- -t "TEST_NAME"`. On Linux, missing browser system libraries may require `npx playwright install-deps chromium`.
 
 The standalone `vitest.config.ts` disables `.env` loading, defines a dummy publishable key, and provides network guards for external/API/POST requests. Restored suites must mock Stripe and activate those guards; do not use real credentials in isolated UI tests.
 
